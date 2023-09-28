@@ -1,0 +1,24 @@
+.map {}
+
+.map-row {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.map-node {
+  width: 250px;
+  height: 250px;
+  border: solid 1px black;
+  font-size: 10px;
+}
+
+.transport-price-indicator {
+  width: 50px;
+  height: 50px;
+  background-color: red;
+}
+
+.x-y {
+  border: solid 1px black;
+  display: inline-block;
+}
