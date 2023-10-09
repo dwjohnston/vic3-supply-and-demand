@@ -9,73 +9,64 @@ export type SupplyDemandCurveProps = {
     demand: SupplyDemandData;
 };
 
-
-const MAX_PRICE = 300
-function generateDataFromSupplyDemand(supply: SupplyDemandData, demand: SupplyDemandData,
-
+function generateDataFromSupplyDemand(supply: SupplyDemandData, demand: SupplyDemandData, maxQuantity: number,
 ): {
-    arr: Array<{
-        price: number;
-        supply: number;
-        demand: number;
-    }>,
-    maxQuantity: number;
+    data: Array<{
+        quantity: number;
+        supplyPrice: number;
+        demandPrice: number;
+    }>
+
 } {
     const data: Array<{
-        price: number;
-        supply: number;
-        demand: number;
+        quantity: number;
+        supplyPrice: number;
+        demandPrice: number;
     }> = [];
 
-    // Extract coefficients from supply and demand objects
-    const { slope: a, offset: c } = supply;
-    const { slope: d, offset: f } = demand;
-
     // Price range (adjust as needed)
-    const minPrice = 0;
-    const maxPrice = MAX_PRICE;
-    const priceStep = 10;
+    const minQuantity = 0;
+    const quantityStep = 10;
+    let quantity = minQuantity;
 
-    for (let price = minPrice; price <= maxPrice; price += priceStep) {
+    while (quantity <= maxQuantity) {
+        // for (let quantity = minQuantity; quantity <= maxQuantity; quantity += quantityStep) 
         // Calculate quantity supplied and demanded for the given price
-        const supplyQuantity = a * price + c;
-        const demandQuantity = d * price + f;
+        const supplyPrice = supply.slope * quantity + supply.offset;
+        const demandPrice = demand.slope * quantity + demand.offset;
 
         // Create data points and add to the array
-        data.push({ price, demand: supplyQuantity, supply: demandQuantity });
+        data.push({ quantity, demandPrice, supplyPrice });
+        quantity += quantityStep;
     }
-
-    console.log(data[0])
-    console.log(data[data.length - 1])
-    const maxQuantity = Math.max(data[0].demand, data[data.length - 1].supply)
-
-    console.log(maxQuantity)
-    return { arr: data, maxQuantity }
+    return {
+        data: data
+    }
 }
 export const SupplyDemandCurve = (props: SupplyDemandCurveProps) => {
     const { supply, demand } = props;
 
-    const [maxQuantity, registerMaxQuantity] = useNormalisationValue();
+    const [maxPrice, registerMaxPrice, maxQuantity, registerMaxQuantity] = useNormalisationValue();
 
     const data = useMemo(() => {
-        const result = generateDataFromSupplyDemand(supply, demand);
+        const result = generateDataFromSupplyDemand(supply, demand, maxQuantity);
         return result;
 
-    }, [supply, demand]);
-
-    useEffect(() => {
-        registerMaxQuantity(data.maxQuantity)
-
-    }, [data.maxQuantity, registerMaxQuantity]);
+    }, [supply, demand, maxQuantity]);
 
 
-    return (<>{maxQuantity}
-        <LineChart width={100} height={100} data={data.arr}>
-            <XAxis domain={[0, MAX_PRICE]} dataKey={"price"} />
-            <YAxis domain={[0, maxQuantity]} />
-            <Line type="monotone" dot={false} dataKey="demand" stroke="#8884d8" />
-            <Line type="monotone" dot={false} dataKey="supply" stroke="#ff44d4" />
+    console.log(data)
+
+
+    return (<><div>
+        {maxPrice},{maxQuantity}
+        < LineChart width={100} height={100} data={data.data.filter((v) => v.demandPrice >= 0 && v.supplyPrice >= 0)} >
+            <XAxis domain={[0, maxQuantity]} dataKey="quantity" label={{ value: 'Quantity', offset: 0, position: 'insideBottom' }} allowDataOverflow />
+            <YAxis domain={[0, maxPrice]} label={{ value: 'Price', angle: -90, offset: 22, position: 'insideLeft' }} allowDataOverflow />
+            <Line type="monotone" dot={false} dataKey="demandPrice" stroke="#8884d8" />
+            <Line type="monotone" dot={false} dataKey="supplyPrice" stroke="#ff44d4" />
         </LineChart>
+    </div >
     </>
     );
 };

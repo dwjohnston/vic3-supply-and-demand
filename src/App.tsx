@@ -1,70 +1,40 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { MapDisplay } from './components/MapDisplay';
 import { Map } from './modelTools/types';
-import { NormalisationProvider } from './providers/NormalisationProviders';
+import { NormalisationProvider, useNormalisationValue } from './providers/NormalisationProviders';
+import { MapDataProvider, useMapData } from './providers/MapProvider';
 
-const ourMap: Map = {
-  width: 3,
-  height: 3,
-  nodes: [
-    {
-      x: 0,
-      y: 1,
-      data: {
-        transportCost: 10,
-        supply: {
-          slope: 1,
-          offset: 0,
-        },
-        demand: {
-          slope: -2,
-          offset: 1000,
-        }
 
-      }
-    },
-    {
-      x: 1,
-      y: 1,
-      data: {
-        transportCost: 50,
-        supply: {
-          slope: 1,
-          offset: 0,
-        },
-        demand: {
-          slope: -1,
-          offset: 100,
-        }
+function AppInner() {
+  const ourMap = useMapData();
+  const [, registerMaxPrice, , registerMaxQuantity] = useNormalisationValue();
 
-      }
-    },
-    {
-      x: 2,
-      y: 1,
-      data: {
-        transportCost: 10,
-        supply: {
-          slope: 1,
-          offset: 0,
-        },
-        demand: {
-          slope: -1,
-          offset: 100,
-        }
-      }
-    }
-  ]
+
+
+  useEffect(() => {
+
+    console.log(ourMap)
+    const maxPrice = Math.max(...ourMap.nodes.map((v) => v.data.demand.offset));
+    const maxQuantity = Math.max(...ourMap.nodes.map((v) => Math.floor(v.data.supply.slope * maxPrice + v.data.supply.offset)))
+
+    console.log(maxPrice, maxQuantity)
+    registerMaxPrice(maxPrice);
+    registerMaxQuantity(maxQuantity);
+  }, [registerMaxPrice, registerMaxQuantity, ourMap])
+
+  return <MapDisplay map={ourMap} />
+
 }
-
 
 function App() {
   return (
     <div className="App">
       <NormalisationProvider>
-        <MapDisplay map={ourMap} />
+        <MapDataProvider>
+          <AppInner />
+        </MapDataProvider>
       </NormalisationProvider>
     </div>
   );

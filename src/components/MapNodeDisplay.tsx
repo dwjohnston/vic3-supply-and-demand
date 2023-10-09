@@ -2,6 +2,7 @@ import React from 'react';
 import { MapNode } from '../modelTools/types';
 import { SupplyDemandCurve } from './SupplyDemandCurve';
 import { TransportPriceIndicator } from './TransportPriceIndicator';
+import { NodeControl } from './LocalControls';
 
 export type MapNodeProps = {
 
@@ -28,6 +29,7 @@ export const MapNodeDisplay = (props: MapNodeProps) => {
             </p>
             <TransportPriceIndicator transportPrice={node.data.transportCost} />
             <SupplyDemandCurve supply={node.data.demand} demand={node.data.supply} />
+            <NodeControl node={node} />
         </div>
     );
 };

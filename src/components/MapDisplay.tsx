@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Map, MapNode } from '../modelTools/types';
 import { MapNodeDisplay } from './MapNodeDisplay';
+import { useNormalisationValue } from '../providers/NormalisationProviders';
 
 export type MapProps = {
     map: Map;
@@ -23,6 +24,7 @@ function generateGetNodeAtIndex(map: Map): ((x: number, y: number) => MapNode | 
 
 export const MapDisplay = (props: MapProps) => {
     const { map } = props;
+
 
     const getNodeByXy = useMemo(() => generateGetNodeAtIndex(map), [map]);
 

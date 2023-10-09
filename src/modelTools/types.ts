@@ -15,6 +15,11 @@ export type MapNode = {
     }
 }
 
+export type LinkedMapNode = MapNode & {
+    id: string;
+    neighbours: Array<LinkedMapNode>;
+}
+
 export type Map = {
     width: number;
     height: number;

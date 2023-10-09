@@ -10,6 +10,16 @@
   height: 250px;
   border: solid 1px black;
   font-size: 10px;
+
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+
+
+}
+
+.map-node>* {
+  border: solid 1px black;
 }
 
 .transport-price-indicator {
@@ -21,4 +31,24 @@
 .x-y {
   border: solid 1px black;
   display: inline-block;
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
+.local-control {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+
+.local-control>h4 {
+  flex: 1 0 100%;
 }
